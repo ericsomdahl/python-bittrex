@@ -4,7 +4,7 @@ from distutils.core import setup
 
 
 setup(name='python-bittrex',
-      version='0.1.0',
+      version='0.1.1',
       packages=['bittrex'],
       modules=[
           'bittrex'
