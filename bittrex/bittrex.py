@@ -20,11 +20,11 @@ class bittrex(object):
         
     def api_query(self, method, req={}):
         if method in self.public_set:
-            request_url = 'https://bittrex.com/api/v1/public/' + method + '?'
+            request_url = 'https://bittrex.com/api/v1.1/public/' + method + '?'
         elif method in self.market_set:
-            request_url = 'https://bittrex.com/api/v1/market/' + method + '?'
+            request_url = 'https://bittrex.com/api/v1.1/market/' + method + '?'
         elif method in self.account_set:
-            request_url = 'https://bittrex.com/api/v1/account/' + method + '?'
+            request_url = 'https://bittrex.com/api/v1.1/account/' + method + '?'
         
         request_url += urllib.urlencode(req)
             
