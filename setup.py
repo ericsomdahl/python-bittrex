@@ -6,9 +6,7 @@ from distutils.core import setup
 setup(name='python-bittrex',
       version='0.1.1',
       packages=['bittrex'],
-      modules=[
-          'bittrex'
-      ],
+      modules=['bittrex'],
       description='Python bindings for bittrex API.',
       author='Eric Somdahl',
       author_email='eric@corsairconsulting.com',

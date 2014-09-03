@@ -1,3 +1,6 @@
+"""
+   See https://bittrex.com/Home/Api
+"""
 
 import urllib
 import time
@@ -8,178 +11,314 @@ import hashlib
 BUY_ORDERBOOK = 'buy'
 SELL_ORDERBOOK = 'sell'
 BOTH_ORDERBOOK = 'both'
-'''
-   see https://bittrex.com/Home/Api
-'''
-class bittrex(object):
-    def __init__(self, APIKey, APISecret):
-        self.APIKey = APIKey
-        self.APISecret = APISecret
-        self.public_set = set(['getmarkets', 'getcurrencies', 'getticker', 'getmarketsummaries', 'getorderbook', 'getmarkethistory'])
-        self.market_set = set(['getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'])
-        self.account_set = set(['getbalances', 'getbalance', 'getdepositaddress', 'withdraw'])
-       
-    def api_query(self, method, req={}):
+
+PUBLIC_SET = ['getmarkets', 'getcurrencies', 'getticker', 'getmarketsummaries', 'getorderbook',
+              'getmarkethistory']
+
+MARKET_SET = ['getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit']
+
+ACCOUNT_SET = ['getbalances', 'getbalance', 'getdepositaddress', 'withdraw']
+
+
+class Bittrex(object):
+    """
+    Used for requesting Bittrex with API key and API secret
+    """
+    def __init__(self, api_key, api_secret):
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.public_set = set(PUBLIC_SET)
+        self.market_set = set(MARKET_SET)
+        self.account_set = set(ACCOUNT_SET)
+
+    def api_query(self, method, options=None):
+        """
+        Queries Bittrex with given method and options
+
+        :param method: Query method for getting info
+        :type method: str
+
+        :param options: Extra options for query
+        :type options: dict
+
+        :return: JSON response from Bittrex
+        :rtype : dict
+        """
+        if not options:
+            options = {}
         nonce = str(int(time.time() * 1000))
+        base_url = 'https://bittrex.com/api/v1.1/%s/'
+        request_url = ''
+
         if method in self.public_set:
-            request_url = 'https://bittrex.com/api/v1.1/public/' + method + '?'  # apikey=' + self.APIKey
+            request_url = (base_url % 'public') + method + '?'
         elif method in self.market_set:
-            request_url = 'https://bittrex.com/api/v1.1/market/' + method + '?apikey=' + self.APIKey + "&nonce=" + nonce
+            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce
         elif method in self.account_set:
-            request_url = 'https://bittrex.com/api/v1.1/account/' + method + '?apikey=' + self.APIKey + "&nonce=" + nonce
-    
-    
-        request_url += urllib.urlencode(req)
-    
-    
-        signature = hmac.new(self.APISecret, request_url, hashlib.sha512).hexdigest()
-    
-        headers = {
-           "apisign": signature
-        }
-    
+            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce
+
+        request_url += urllib.urlencode(options)
+
+        signature = hmac.new(self.api_secret, request_url, hashlib.sha512).hexdigest()
+
+        headers = {"apisign": signature}
+
         ret = requests.get(request_url, headers=headers)
         return ret.json()
 
-    # get_markets Used to get the open and available trading markets at Bittrex along with other meta data.
-    # Parameters
-    # None
     def get_markets(self):
+        """
+        Used to get the open and available trading markets
+        at Bittrex along with other meta data.
+
+        :return: Available market info in JSON
+        :rtype : dict
+        """
         return self.api_query('getmarkets')
-    
-    # get_currencies Used to get all supported currencies at Bittrex along with other meta data.
-    # Parameters
-    # None
+
     def get_currencies(self):
+        """
+        Used to get all supported currencies at Bittrex
+        along with other meta data.
+
+        :return: Supported currencies info in JSON
+        :rtype : dict
+        """
         return self.api_query('getcurrencies')
-    
-    # get_ticker Used to get the current tick values for a market.
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
+
     def get_ticker(self, market):
+        """
+        Used to get the current tick values for a market.
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :return: Current values for given market in JSON
+        :rtype : dict
+        """
         return self.api_query('getticker', {'market': market})
-    
-    # get_market_summaries  Used to get the last 24 hour summary of all active exchanges
-    # Parameters
-    # None
+
     def get_market_summaries(self):
+        """
+        Used to get the last 24 hour summary of all active exchanges
+
+        :return: Summaries of active exchanges in JSON
+        :rtype : dict
+        """
         return self.api_query('getmarketsummaries')
-    
-    # Used to get retrieve the orderbook for a given market
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # type    required    buy, sell or both to identify the type of orderbook to return.  Use constants BUY_ORDERBOOK, SELL_ORDERBOOK, BOTH_ORDERBOOK
-    # depth    optional    defaults to 20 - how deep of an order book to retrieve. Max is 100
+
     def get_orderbook(self, market, depth_type, depth=20):
+        """
+        Used to get retrieve the orderbook for a given market
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param depth_type: buy, sell or both to identify the type of orderbook to return.
+            Use constants BUY_ORDERBOOK, SELL_ORDERBOOK, BOTH_ORDERBOOK
+        :type depth_type: str
+
+        :param depth: how deep of an order book to retrieve. Max is 100, default is 20
+        :type depth: int
+
+        :return: Orderbook of market in JSON
+        :rtype : dict
+        """
         return self.api_query('getorderbook', {'market': market, 'type': depth_type, 'depth': depth})
-    
-    # /market/getmarkethistory
-    # Used to retrieve the latest trades that have occured for a specific market.
-    #
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # count    optional    a number between 1-100 for the number of entries to return (default = 20)
+
     def get_market_history(self, market, count):
+        """
+        Used to retrieve the latest trades that have occured for a
+        specific market.
+
+        /market/getmarkethistory
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param count: Number between 1-100 for the number of entries to return (default = 20)
+        :type count: int
+
+        :return: Market history in JSON
+        :rtype : dict
+        """
         return self.api_query('getmarkethistory', {'market': market, 'count': count})
-        
-    # /market/buymarket
-    # Used to place a buy order in a specific market. Use buymarket to place market orders. Make sure you have the proper permissions set on your API keys for this call to work
-    #
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # quantity    required    the amount to purchase
-    # rate    required    the rate at which to place the order. this is not needed for market orders
+
     def buy_market(self, market, quantity, rate):
+        """
+        Used to place a buy order in a specific market. Use buymarket to
+        place market orders. Make sure you have the proper permissions
+        set on your API keys for this call to work
+
+        /market/buymarket
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param quantity: The amount to purchase
+        :type quantity: float
+
+        :param rate: The rate at which to place the order.
+            This is not needed for market orders
+        :type rate: float
+
+        :return:
+        :rtype : dict
+        """
         return self.api_query('buymarket', {'market': market, 'quantity': quantity, 'rate': rate})
-    
-    # /market/buylimit
-    # Used to place a buy order in a specific market. Use buylimit to place limit orders Make sure you have the proper permissions set on your API keys for this call to work
-    #
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # quantity    required    the amount to purchase
-    # rate    required    the rate at which to place the order. this is not needed for market orders
+
     def buy_limit(self, market, quantity, rate):
+        """
+        Used to place a buy order in a specific market. Use buylimit to place
+        limit orders Make sure you have the proper permissions set on your
+        API keys for this call to work
+
+        /market/buylimit
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param quantity: The amount to purchase
+        :type quantity: float
+
+        :param rate: The rate at which to place the order.
+            This is not needed for market orders
+        :type rate: float
+
+        :return:
+        :rtype : dict
+        """
         return self.api_query('buylimit', {'market': market, 'quantity': quantity, 'rate': rate})
-    
-    # /market/sellmarket
-    # Used to place a sell order in a specific market. Use sellmarket to place market orders. Make sure you have the proper permissions set on your API keys for this call to work
-    #
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # quantity    required    the amount to purchase
-    # rate    required    the rate at which to place the order. this is not needed for market orders
+
     def sell_market(self, market, quantity, rate):
+        """
+        Used to place a sell order in a specific market. Use sellmarket to place
+        market orders. Make sure you have the proper permissions set on your
+        API keys for this call to work
+
+        /market/sellmarket
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param quantity: The amount to purchase
+        :type quantity: float
+
+        :param rate: The rate at which to place the order.
+            This is not needed for market orders
+        :type rate: float
+
+        :return:
+        :rtype : dict
+        """
         return self.api_query('sellmarket', {'market': market, 'quantity': quantity, 'rate': rate})
-    
-    # /market/selllimit
-    # Used to place a sell order in a specific market. Use selllimit to place limit orders Make sure you have the proper permissions set on your API keys for this call to work
-    #
-    # Parameters
-    # parameter    required    description
-    # market    required    a string literal for the market (ex: BTC-LTC)
-    # quantity    required    the amount to purchase
-    # rate    required    the rate at which to place the order. this is not needed for market orders
+
     def sell_limit(self, market, quantity, rate):
+        """
+        Used to place a sell order in a specific market. Use selllimit to place
+        limit orders Make sure you have the proper permissions set on your
+        API keys for this call to work
+
+        /market/selllimit
+
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+
+        :param quantity: The amount to purchase
+        :type quantity: float
+
+        :param rate: The rate at which to place the order.
+            This is not needed for market orders
+        :type rate: float
+
+        :return:
+        :rtype : dict
+        """
         return self.api_query('selllimit', {'market': market, 'quantity': quantity, 'rate': rate})
-    
-    # /market/cancel
-    # Used to cancel a buy or sell order.
-    #
-    # Parameters
-    # parameter    required    description
-    # uuid    required    uuid of buy or sell order
+
     def cancel(self, uuid):
+        """
+        Used to cancel a buy or sell order
+
+        /market/cancel
+
+        :param uuid: uuid of buy or sell order
+        :type uuid: str
+
+        :return:
+        :rtype : dict
+        """
         return self.api_query('cancel', {'uuid': uuid})
-    
-    # /market/getopenorders
-    # Get all orders that you currently have opened. A specific market can be requested
-    #
-    # Parameters
-    # parameter    required    description
-    # market    optional    a string literal for the market (ie. BTC-LTC)
+
     def get_open_orders(self, market):
+        """
+        Get all orders that you currently have opened. A specific market can be requested
+
+        /market/getopenorders
+
+        :param market: String literal for the market (ie. BTC-LTC)
+        :type market: str
+
+        :return: Open orders info in JSON
+        :rtype : dict
+        """
         return self.api_query('getopenorders', {'market': market})
 
-    # /account/getbalances
-    # Used to retrieve all balances from your
-    #
-    # Parameters
-    # None
     def get_balances(self):
+        """
+        Used to retrieve all balances from your account
+
+        /account/getbalances
+
+        :return: Balances info in JSON
+        :rtype : dict
+        """
         return self.api_query('getbalances', {})
-    
-    # /account/getbalance
-    # Used to retrieve the balance from your account for a specific currency.
-    #
-    # Parameters
-    # parameter    required    description
-    # currency    required    a string literal for the currency (ex: LTC)
+
     def get_balance(self, currency):
+        """
+        Used to retrieve the balance from your account for a specific currency
+
+        /account/getbalance
+
+        :param currency: String literal for the currency (ex: LTC)
+        :type currency: str
+
+        :return: Balance info in JSON
+        :rtype : dict
+        """
         return self.api_query('getbalance', {'currency': currency})
-    
-    # /account/getdepositaddress
-    # Used to generate or retrieve an address for a specific currency.
-    #
-    # Parameters
-    # parameter    required    description
-    # currency    required    a string literal for the currency (ie. BTC)
+
     def get_deposit_address(self, currency):
+        """
+        Used to generate or retrieve an address for a specific currency
+
+        /account/getdepositaddress
+
+        :param currency: String literal for the currency (ie. BTC)
+        :type currency: str
+
+        :return: Address info in JSON
+        :rtype : dict
+        """
         return self.api_query('getdepositaddress', {'currency': currency})
 
-    # /account/withdraw
-    # Used to withdraw funds from your account.
-    #
-    # Parameters public ApiHelper.DefaultResponse Withdraw(string apiKey = null, string currency = null, decimal quantity = 0, string address = null)
-    # parameter    required    description
-    # currency    required    a string literal for the currency (ie. BTC)
-    # quantity    required    the quantity of coins to withdraw
-    # address    required    the address where to send the funds.
     def withdraw(self, currency, quantity, address):
-        return self.api_query('withdraw', {'currency': currency, 'quantity':quantity, 'address':address})
+        """
+        Used to withdraw funds from your account
+
+        /account/withdraw
+
+        :param currency: String literal for the currency (ie. BTC)
+        :type currency: str
+
+        :param quantity: The quantity of coins to withdraw
+        :type quantity: float
+
+        :param address: The address where to send the funds.
+        :type address: str
+
+        :return:
+        :rtype : dict
+        """
+        return self.api_query('withdraw', {'currency': currency, 'quantity': quantity, 'address': address})
