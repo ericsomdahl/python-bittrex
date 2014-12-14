@@ -10,8 +10,11 @@ Tips are appreciated:
 
 In order to run the integration tests, a file called "secrets.json" must be added to the test folder.
 Structure it as follows, adding your API keys:
-
+<pre>
+<code>
 {
   "key": "mykey",
   "secret": "mysecret"
 }
+</code>
+</pre>
