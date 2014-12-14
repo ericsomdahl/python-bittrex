@@ -44,6 +44,11 @@ class TestBittrexPublicAPI(unittest.TestCase):
         self.assertTrue(isinstance(actual['result'], list), "result is not a list")
         self.assertTrue(len(actual['result']) > 0, "result list is 0-length")
 
+    def test_get_currencies(self):
+        actual = self.bittrex.get_currencies()
+        test_basic_response(self, actual, "get_currencies")
+        pass
+
 
 class TestBittrexAccountAPI(unittest.TestCase):
     """
@@ -88,7 +93,11 @@ class TestBittrexAccountAPI(unittest.TestCase):
     def test_get_balance(self):
         actual = self.bittrex.get_balance('BTC')
         test_basic_response(self, actual, "get_balance")
-        pass
+        self.assertTrue(isinstance(actual['result'], dict), "result is not a dict")
+        self.assertEqual(actual['result']['Currency'],
+                         "BTC",
+                         "requested currency {0:s} does not match returned currency {1:s}"
+                         .format("BTC", actual['result']['Currency']))
 
 if __name__ == '__main__':
     unittest.main()

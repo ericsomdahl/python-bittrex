@@ -53,9 +53,9 @@ class Bittrex(object):
         if method in self.public_set:
             request_url = (base_url % 'public') + method + '?'
         elif method in self.market_set:
-            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '?'
+            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '&'
         elif method in self.account_set:
-            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '?'
+            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '&'
 
         request_url += urllib.urlencode(options)
 
