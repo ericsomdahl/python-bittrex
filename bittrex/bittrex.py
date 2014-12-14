@@ -25,8 +25,8 @@ class Bittrex(object):
     Used for requesting Bittrex with API key and API secret
     """
     def __init__(self, api_key, api_secret):
-        self.api_key = api_key
-        self.api_secret = api_secret
+        self.api_key = api_key if api_key is not None else ''
+        self.api_secret = api_secret if api_secret is not None else ''
         self.public_set = set(PUBLIC_SET)
         self.market_set = set(MARKET_SET)
         self.account_set = set(ACCOUNT_SET)
