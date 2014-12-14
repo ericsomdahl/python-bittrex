@@ -25,8 +25,8 @@ class Bittrex(object):
     Used for requesting Bittrex with API key and API secret
     """
     def __init__(self, api_key, api_secret):
-        self.api_key = api_key if api_key is not None else ''
-        self.api_secret = api_secret if api_secret is not None else ''
+        self.api_key = str(api_key) if api_key is not None else ''
+        self.api_secret = str(api_secret) if api_secret is not None else ''
         self.public_set = set(PUBLIC_SET)
         self.market_set = set(MARKET_SET)
         self.account_set = set(ACCOUNT_SET)
@@ -53,9 +53,9 @@ class Bittrex(object):
         if method in self.public_set:
             request_url = (base_url % 'public') + method + '?'
         elif method in self.market_set:
-            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce
+            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '?'
         elif method in self.account_set:
-            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce
+            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '?'
 
         request_url += urllib.urlencode(options)
 

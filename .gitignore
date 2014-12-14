@@ -154,3 +154,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#JSON file containing API keys and API secrets
+secrets.json
