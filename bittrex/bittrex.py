@@ -136,7 +136,7 @@ class Bittrex(object):
         """
         return self.api_query('getmarkethistory', {'market': market, 'count': count})
 
-    def buy_market(self, market, quantity, rate):
+    def buy_market(self, market, quantity):
         """
         Used to place a buy order in a specific market. Use buymarket to
         place market orders. Make sure you have the proper permissions
@@ -157,7 +157,7 @@ class Bittrex(object):
         :return:
         :rtype : dict
         """
-        return self.api_query('buymarket', {'market': market, 'quantity': quantity, 'rate': rate})
+        return self.api_query('buymarket', {'market': market, 'quantity': quantity})
 
     def buy_limit(self, market, quantity, rate):
         """
@@ -182,7 +182,7 @@ class Bittrex(object):
         """
         return self.api_query('buylimit', {'market': market, 'quantity': quantity, 'rate': rate})
 
-    def sell_market(self, market, quantity, rate):
+    def sell_market(self, market, quantity):
         """
         Used to place a sell order in a specific market. Use sellmarket to place
         market orders. Make sure you have the proper permissions set on your
@@ -203,7 +203,7 @@ class Bittrex(object):
         :return:
         :rtype : dict
         """
-        return self.api_query('sellmarket', {'market': market, 'quantity': quantity, 'rate': rate})
+        return self.api_query('sellmarket', {'market': market, 'quantity': quantity})
 
     def sell_limit(self, market, quantity, rate):
         """
