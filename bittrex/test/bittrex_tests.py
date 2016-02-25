@@ -92,7 +92,7 @@ class TestBittrexAccountAPI(unittest.TestCase):
 
     def test_get_balance(self):
         actual = self.bittrex.get_balance('BTC')
-        test_basic_response(self, actual, "get_balance")
+        test_basic_response(self, actual, "getbalance")
         self.assertTrue(isinstance(actual['result'], dict), "result is not a dict")
         self.assertEqual(actual['result']['Currency'],
                          "BTC",
