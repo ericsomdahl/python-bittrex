@@ -12,12 +12,11 @@ BUY_ORDERBOOK = 'buy'
 SELL_ORDERBOOK = 'sell'
 BOTH_ORDERBOOK = 'both'
 
-PUBLIC_SET = ['getmarkets', 'getcurrencies', 'getticker', 'getmarketsummaries', 'getorderbook',
-              'getmarkethistory']
+BASE_URL = 'https://bittrex.com/api/v1.1/%s/'
 
-MARKET_SET = ['getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit']
+MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'}
 
-ACCOUNT_SET = ['getbalances', 'getbalance', 'getdepositaddress', 'withdraw']
+ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw'}
 
 
 class Bittrex(object):
@@ -27,11 +26,8 @@ class Bittrex(object):
     def __init__(self, api_key, api_secret):
         self.api_key = str(api_key) if api_key is not None else ''
         self.api_secret = str(api_secret) if api_secret is not None else ''
-        self.public_set = set(PUBLIC_SET)
-        self.market_set = set(MARKET_SET)
-        self.account_set = set(ACCOUNT_SET)
 
-    def api_query(self, method, options=None):
+    def api_query(self, method, options={}):
         """
         Queries Bittrex with given method and options
 
@@ -44,27 +40,23 @@ class Bittrex(object):
         :return: JSON response from Bittrex
         :rtype : dict
         """
-        if not options:
-            options = {}
         nonce = str(int(time.time() * 1000))
-        base_url = 'https://bittrex.com/api/v1.1/%s/'
-        request_url = ''
+        method_set = 'public'
 
-        if method in self.public_set:
-            request_url = (base_url % 'public') + method + '?'
-        elif method in self.market_set:
-            request_url = (base_url % 'market') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '&'
-        elif method in self.account_set:
-            request_url = (base_url % 'account') + method + '?apikey=' + self.api_key + "&nonce=" + nonce + '&'
+        if method in MARKET_SET:
+            method_set = 'market'
+        elif method in ACCOUNT_SET:
+            method_set = 'account'
 
-        request_url += urllib.urlencode(options)
+        request_url = (BASE_URL % method_set) + method + '?'
 
-        signature = hmac.new(self.api_secret, request_url, hashlib.sha512).hexdigest()
-
-        headers = {"apisign": signature}
-
-        ret = requests.get(request_url, headers=headers)
-        return ret.json()
+        if method_set != 'public':
+            request_url += 'apikey=' + self.api_key + "&nonce=" + nonce + '&'
+            
+        return requests.get(
+            request_url + urllib.urlencode(options),
+            headers={"apisign": hmac.new(self.api_secret, request_url, hashlib.sha512).hexdigest()}
+        ).json()
 
     def get_markets(self):
         """
@@ -128,7 +120,7 @@ class Bittrex(object):
 
     def get_market_history(self, market, count):
         """
-        Used to retrieve the latest trades that have occured for a
+        Used to retrieve the latest trades that have occurred for a
         specific market.
 
         /market/getmarkethistory
@@ -144,7 +136,7 @@ class Bittrex(object):
         """
         return self.api_query('getmarkethistory', {'market': market, 'count': count})
 
-    def buy_market(self, market, quantity, rate):
+    def buy_market(self, market, quantity):
         """
         Used to place a buy order in a specific market. Use buymarket to
         place market orders. Make sure you have the proper permissions
@@ -165,7 +157,7 @@ class Bittrex(object):
         :return:
         :rtype : dict
         """
-        return self.api_query('buymarket', {'market': market, 'quantity': quantity, 'rate': rate})
+        return self.api_query('buymarket', {'market': market, 'quantity': quantity})
 
     def buy_limit(self, market, quantity, rate):
         """
@@ -190,7 +182,7 @@ class Bittrex(object):
         """
         return self.api_query('buylimit', {'market': market, 'quantity': quantity, 'rate': rate})
 
-    def sell_market(self, market, quantity, rate):
+    def sell_market(self, market, quantity):
         """
         Used to place a sell order in a specific market. Use sellmarket to place
         market orders. Make sure you have the proper permissions set on your
@@ -211,7 +203,7 @@ class Bittrex(object):
         :return:
         :rtype : dict
         """
-        return self.api_query('sellmarket', {'market': market, 'quantity': quantity, 'rate': rate})
+        return self.api_query('sellmarket', {'market': market, 'quantity': quantity})
 
     def sell_limit(self, market, quantity, rate):
         """
