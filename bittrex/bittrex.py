@@ -53,9 +53,11 @@ class Bittrex(object):
         if method_set != 'public':
             request_url += 'apikey=' + self.api_key + "&nonce=" + nonce + '&'
             
+        request_url += urllib.urlencode(options)
+    
         return requests.get(
-            request_url + urllib.urlencode(options),
-            headers={"apisign": hmac.new(self.api_secret, request_url, hashlib.sha512).hexdigest()}
+            request_url,
+            headers={"apisign": hmac.new(self.api_secret.encode(), request_url.encode(), hashlib.sha512).hexdigest()}
         ).json()
 
     def get_markets(self):
