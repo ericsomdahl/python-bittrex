@@ -16,7 +16,7 @@ BASE_URL = 'https://bittrex.com/api/v1.1/%s/'
 
 MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'}
 
-ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw'}
+ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw','getorderhistory'}
 
 
 class Bittrex(object):
@@ -316,3 +316,21 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('withdraw', {'currency': currency, 'quantity': quantity, 'address': address})
+   
+   def get_order_history(self, market, count):
+        """
+        Used to reterieve order trade history of account
+
+        /account/getorderhistory
+
+        :param market: optional a string literal for the market (ie. BTC-LTC). If ommited, will return for all markets
+        :type market: str
+
+        :param count: optional 	the number of records to return
+        :type count: int
+
+        :return: order history in JSON
+        :rtype : dict
+
+        """
+        return self.api_query('getorderhistory', {'market':market,'count': count})
