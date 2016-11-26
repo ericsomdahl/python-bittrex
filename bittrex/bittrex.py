@@ -2,11 +2,16 @@
    See https://bittrex.com/Home/Api
 """
 
-import urllib
 import time
-import requests
 import hmac
 import hashlib
+try:
+    from urllib import urlencode
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urlencode
+    from urllib.parse import urljoin
+import requests
 
 BUY_ORDERBOOK = 'buy'
 SELL_ORDERBOOK = 'sell'
@@ -16,7 +21,7 @@ BASE_URL = 'https://bittrex.com/api/v1.1/%s/'
 
 MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'}
 
-ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw','getorderhistory'}
+ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw', 'getorderhistory'}
 
 
 class Bittrex(object):
@@ -27,7 +32,7 @@ class Bittrex(object):
         self.api_key = str(api_key) if api_key is not None else ''
         self.api_secret = str(api_secret) if api_secret is not None else ''
 
-    def api_query(self, method, options={}):
+    def api_query(self, method, options=None):
         """
         Queries Bittrex with given method and options
 
@@ -40,6 +45,8 @@ class Bittrex(object):
         :return: JSON response from Bittrex
         :rtype : dict
         """
+        if not options:
+            options = {}
         nonce = str(int(time.time() * 1000))
         method_set = 'public'
 
@@ -52,9 +59,9 @@ class Bittrex(object):
 
         if method_set != 'public':
             request_url += 'apikey=' + self.api_key + "&nonce=" + nonce + '&'
-            
-        request_url += urllib.urlencode(options)
-    
+
+        request_url += urlencode(options)
+
         return requests.get(
             request_url,
             headers={"apisign": hmac.new(self.api_secret.encode(), request_url.encode(), hashlib.sha512).hexdigest()}
@@ -333,4 +340,4 @@ class Bittrex(object):
         :rtype : dict
 
         """
-        return self.api_query('getorderhistory', {'market':market,'count': count})
+        return self.api_query('getorderhistory', {'market':market, 'count': count})
