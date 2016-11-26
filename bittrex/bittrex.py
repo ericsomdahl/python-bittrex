@@ -316,8 +316,8 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('withdraw', {'currency': currency, 'quantity': quantity, 'address': address})
-   
-   def get_order_history(self, market, count):
+
+    def get_order_history(self, market, count):
         """
         Used to reterieve order trade history of account
 
