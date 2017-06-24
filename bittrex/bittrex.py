@@ -342,7 +342,7 @@ class Bittrex(object):
         """
         return self.api_query('getorderhistory', {'market':market, 'count': count})
 
-    def get_order_history(self, uuid):
+    def get_order(self, uuid):
         """
         Used to get details of buy or sell order
 
