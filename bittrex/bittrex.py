@@ -5,6 +5,14 @@
 import time
 import hmac
 import hashlib
+
+try:
+    from Crypto.Cipher import AES
+    import getpass, ast
+    encrypted = True
+except ImportError:
+    encrypted = False
+
 try:
     from urllib import urlencode
     from urlparse import urljoin
@@ -28,20 +36,27 @@ class Bittrex(object):
     """
     Used for requesting Bittrex with API key and API secret
     """
-    def __init__(self, api_key, api_secret):
-        self.api_key = str(api_key) if api_key is not None else ''
-        self.api_secret = str(api_secret) if api_secret is not None else ''
+    def __init__(self, api_key, api_secret, mode=False):
+        if encrypted and mode:
+            cipher = AES.new(getpass.getpass('Input decryption password (string will not show)'))
+            try:
+                api_key = ast.literal_eval(api_key) if type(api_key) == str else api_key
+                api_secret = ast.literal_eval(api_secret) if type(api_secret) == str else api_secret
+            except:
+                pass
+            self.api_key = cipher.decrypt(api_key).decode()
+            self.api_secret = cipher.decrypt(api_secret).decode()
+        else:
+            self.api_key = str(api_key) if api_key is not None else ''
+            self.api_secret = str(api_secret) if api_secret is not None else ''
 
     def api_query(self, method, options=None):
         """
         Queries Bittrex with given method and options
-
         :param method: Query method for getting info
         :type method: str
-
         :param options: Extra options for query
         :type options: dict
-
         :return: JSON response from Bittrex
         :rtype : dict
         """
@@ -71,7 +86,6 @@ class Bittrex(object):
         """
         Used to get the open and available trading markets
         at Bittrex along with other meta data.
-
         :return: Available market info in JSON
         :rtype : dict
         """
@@ -81,7 +95,6 @@ class Bittrex(object):
         """
         Used to get all supported currencies at Bittrex
         along with other meta data.
-
         :return: Supported currencies info in JSON
         :rtype : dict
         """
@@ -90,19 +103,26 @@ class Bittrex(object):
     def get_ticker(self, market):
         """
         Used to get the current tick values for a market.
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :return: Current values for given market in JSON
         :rtype : dict
         """
         return self.api_query('getticker', {'market': market})
 
+    def get_market_summary(self, market):
+        """
+        Used to get the current tick values for a market.
+        :param market: String literal for the market (ex: BTC-LTC)
+        :type market: str
+        :return: Current values for given market in JSON
+        :rtype : dict
+        """
+        return self.api_query('getmarketsummary', {'market': market})
+
     def get_market_summaries(self):
         """
         Used to get the last 24 hour summary of all active exchanges
-
         :return: Summaries of active exchanges in JSON
         :rtype : dict
         """
@@ -111,17 +131,13 @@ class Bittrex(object):
     def get_orderbook(self, market, depth_type, depth=20):
         """
         Used to get retrieve the orderbook for a given market
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param depth_type: buy, sell or both to identify the type of orderbook to return.
             Use constants BUY_ORDERBOOK, SELL_ORDERBOOK, BOTH_ORDERBOOK
         :type depth_type: str
-
         :param depth: how deep of an order book to retrieve. Max is 100, default is 20
         :type depth: int
-
         :return: Orderbook of market in JSON
         :rtype : dict
         """
@@ -131,15 +147,11 @@ class Bittrex(object):
         """
         Used to retrieve the latest trades that have occurred for a
         specific market.
-
         /market/getmarkethistory
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param count: Number between 1-100 for the number of entries to return (default = 20)
         :type count: int
-
         :return: Market history in JSON
         :rtype : dict
         """
@@ -150,19 +162,14 @@ class Bittrex(object):
         Used to place a buy order in a specific market. Use buymarket to
         place market orders. Make sure you have the proper permissions
         set on your API keys for this call to work
-
         /market/buymarket
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param quantity: The amount to purchase
         :type quantity: float
-
         :param rate: The rate at which to place the order.
             This is not needed for market orders
         :type rate: float
-
         :return:
         :rtype : dict
         """
@@ -173,19 +180,14 @@ class Bittrex(object):
         Used to place a buy order in a specific market. Use buylimit to place
         limit orders Make sure you have the proper permissions set on your
         API keys for this call to work
-
         /market/buylimit
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param quantity: The amount to purchase
         :type quantity: float
-
         :param rate: The rate at which to place the order.
             This is not needed for market orders
         :type rate: float
-
         :return:
         :rtype : dict
         """
@@ -196,19 +198,14 @@ class Bittrex(object):
         Used to place a sell order in a specific market. Use sellmarket to place
         market orders. Make sure you have the proper permissions set on your
         API keys for this call to work
-
         /market/sellmarket
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param quantity: The amount to purchase
         :type quantity: float
-
         :param rate: The rate at which to place the order.
             This is not needed for market orders
         :type rate: float
-
         :return:
         :rtype : dict
         """
@@ -219,19 +216,14 @@ class Bittrex(object):
         Used to place a sell order in a specific market. Use selllimit to place
         limit orders Make sure you have the proper permissions set on your
         API keys for this call to work
-
         /market/selllimit
-
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-
         :param quantity: The amount to purchase
         :type quantity: float
-
         :param rate: The rate at which to place the order.
             This is not needed for market orders
         :type rate: float
-
         :return:
         :rtype : dict
         """
@@ -240,12 +232,9 @@ class Bittrex(object):
     def cancel(self, uuid):
         """
         Used to cancel a buy or sell order
-
         /market/cancel
-
         :param uuid: uuid of buy or sell order
         :type uuid: str
-
         :return:
         :rtype : dict
         """
@@ -254,12 +243,9 @@ class Bittrex(object):
     def get_open_orders(self, market):
         """
         Get all orders that you currently have opened. A specific market can be requested
-
         /market/getopenorders
-
         :param market: String literal for the market (ie. BTC-LTC)
         :type market: str
-
         :return: Open orders info in JSON
         :rtype : dict
         """
@@ -268,9 +254,7 @@ class Bittrex(object):
     def get_balances(self):
         """
         Used to retrieve all balances from your account
-
         /account/getbalances
-
         :return: Balances info in JSON
         :rtype : dict
         """
@@ -279,12 +263,9 @@ class Bittrex(object):
     def get_balance(self, currency):
         """
         Used to retrieve the balance from your account for a specific currency
-
         /account/getbalance
-
         :param currency: String literal for the currency (ex: LTC)
         :type currency: str
-
         :return: Balance info in JSON
         :rtype : dict
         """
@@ -293,12 +274,9 @@ class Bittrex(object):
     def get_deposit_address(self, currency):
         """
         Used to generate or retrieve an address for a specific currency
-
         /account/getdepositaddress
-
         :param currency: String literal for the currency (ie. BTC)
         :type currency: str
-
         :return: Address info in JSON
         :rtype : dict
         """
@@ -307,18 +285,13 @@ class Bittrex(object):
     def withdraw(self, currency, quantity, address):
         """
         Used to withdraw funds from your account
-
         /account/withdraw
-
         :param currency: String literal for the currency (ie. BTC)
         :type currency: str
-
         :param quantity: The quantity of coins to withdraw
         :type quantity: float
-
         :param address: The address where to send the funds.
         :type address: str
-
         :return:
         :rtype : dict
         """
@@ -327,17 +300,12 @@ class Bittrex(object):
     def get_order_history(self, market, count):
         """
         Used to reterieve order trade history of account
-
         /account/getorderhistory
-
         :param market: optional a string literal for the market (ie. BTC-LTC). If ommited, will return for all markets
         :type market: str
-
         :param count: optional 	the number of records to return
         :type count: int
-
         :return: order history in JSON
         :rtype : dict
-
         """
         return self.api_query('getorderhistory', {'market':market, 'count': count})
