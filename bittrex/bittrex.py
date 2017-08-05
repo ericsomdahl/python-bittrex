@@ -107,6 +107,18 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getmarketsummaries')
+      
+    def get_marketsummary(self, market):
+        """
+        Used to get the last 24 hour summary of all active exchanges in specific coin
+        
+        :param market: String literal for the market(ex: XRP)
+        :type market: str
+        
+        :return: Summaries of active exchanges of a coin in JSON
+        :rtype : dict
+        """
+        return self.api_query('getmarketsummary', {'market': market})
 
     def get_orderbook(self, market, depth_type, depth=20):
         """
@@ -275,6 +287,8 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getbalances', {})
+   
+   
 
     def get_balance(self, currency):
         """
