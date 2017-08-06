@@ -35,7 +35,7 @@ def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
     cipher = AES.new(getpass.getpass('Input encryption password (string will not show)'))
     api_key_n = cipher.encrypt(api_key)
     api_secret_n = cipher.encrypt(api_secret)
-    api = {'key': str(api_key_n), 'secret':str(api_secret_n)}
+    api = {'key': str(api_key_n), 'secret': str(api_secret_n)}
     if export:
         with open(export_fn, 'w') as outfile:
             json.dump(api, outfile)
@@ -62,7 +62,6 @@ class Bittrex(object):
             self.api_secret = cipher.decrypt(self.api_secret).decode()
         else:
             raise ImportError('"pycrypto" module has to be installed')
-
 
     def api_query(self, method, options=None):
         """
@@ -173,24 +172,6 @@ class Bittrex(object):
         """
         return self.api_query('getmarkethistory', {'market': market, 'count': count})
 
-    def buy_market(self, market, quantity):
-        """
-        Used to place a buy order in a specific market. Use buymarket to
-        place market orders. Make sure you have the proper permissions
-        set on your API keys for this call to work
-        /market/buymarket
-        :param market: String literal for the market (ex: BTC-LTC)
-        :type market: str
-        :param quantity: The amount to purchase
-        :type quantity: float
-        :param rate: The rate at which to place the order.
-            This is not needed for market orders
-        :type rate: float
-        :return:
-        :rtype : dict
-        """
-        return self.api_query('buymarket', {'market': market, 'quantity': quantity})
-
     def buy_limit(self, market, quantity, rate):
         """
         Used to place a buy order in a specific market. Use buylimit to place
@@ -208,24 +189,6 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('buylimit', {'market': market, 'quantity': quantity, 'rate': rate})
-
-    def sell_market(self, market, quantity):
-        """
-        Used to place a sell order in a specific market. Use sellmarket to place
-        market orders. Make sure you have the proper permissions set on your
-        API keys for this call to work
-        /market/sellmarket
-        :param market: String literal for the market (ex: BTC-LTC)
-        :type market: str
-        :param quantity: The amount to purchase
-        :type quantity: float
-        :param rate: The rate at which to place the order.
-            This is not needed for market orders
-        :type rate: float
-        :return:
-        :rtype : dict
-        """
-        return self.api_query('sellmarket', {'market': market, 'quantity': quantity})
 
     def sell_limit(self, market, quantity, rate):
         """
@@ -276,8 +239,6 @@ class Bittrex(object):
         """
         return self.api_query('getbalances', {})
    
-   
-
     def get_balance(self, currency):
         """
         Used to retrieve the balance from your account for a specific currency
