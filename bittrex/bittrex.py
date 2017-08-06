@@ -5,14 +5,6 @@
 import time
 import hmac
 import hashlib
-
-try:
-    from Crypto.Cipher import AES
-    import getpass, ast
-    encrypted = True
-except ImportError:
-    encrypted = False
-
 try:
     from urllib import urlencode
     from urlparse import urljoin
@@ -20,6 +12,13 @@ except ImportError:
     from urllib.parse import urlencode
     from urllib.parse import urljoin
 import requests
+
+try:
+    from Crypto.Cipher import AES
+    import getpass, ast, json
+    encrypted = True
+except ImportError:
+    encrypted = False
 
 BUY_ORDERBOOK = 'buy'
 SELL_ORDERBOOK = 'sell'
@@ -29,26 +28,40 @@ BASE_URL = 'https://bittrex.com/api/v1.1/%s/'
 
 MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'}
 
-ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw', 'getorderhistory'}
+ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw', 'getorderhistory', 'getorder'}
+
+def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
+    cipher = AES.new(getpass.getpass('Input encryption password (string will not show)'))
+    api_key_n = cipher.encrypt(api_key)
+    api_secret_n = cipher.encrypt(api_secret)
+    api = {'key': str(api_key_n), 'secret':str(api_secret_n)}
+    if export:
+        with open(export_fn, 'w') as outfile:
+            json.dump(api, outfile)
+    return api
 
 
 class Bittrex(object):
     """
     Used for requesting Bittrex with API key and API secret
     """
-    def __init__(self, api_key, api_secret, mode=False):
-        if encrypted and mode:
+    def __init__(self, api_key, api_secret):
+        self.api_key = str(api_key) if api_key is not None else ''
+        self.api_secret = str(api_secret) if api_secret is not None else ''
+
+    def decrypt(self):
+        if encrypted:
             cipher = AES.new(getpass.getpass('Input decryption password (string will not show)'))
             try:
-                api_key = ast.literal_eval(api_key) if type(api_key) == str else api_key
-                api_secret = ast.literal_eval(api_secret) if type(api_secret) == str else api_secret
+                self.api_key = ast.literal_eval(self.api_key) if type(self.api_key) == str else self.api_key
+                self.api_secret = ast.literal_eval(self.api_secret) if type(self.api_secret) == str else self.api_secret
             except:
                 pass
-            self.api_key = cipher.decrypt(api_key).decode()
-            self.api_secret = cipher.decrypt(api_secret).decode()
+            self.api_key = cipher.decrypt(self.api_key).decode()
+            self.api_secret = cipher.decrypt(self.api_secret).decode()
         else:
-            self.api_key = str(api_key) if api_key is not None else ''
-            self.api_secret = str(api_secret) if api_secret is not None else ''
+            raise ImportError('"pycrypto" module has to be installed')
+
 
     def api_query(self, method, options=None):
         """
@@ -110,16 +123,6 @@ class Bittrex(object):
         """
         return self.api_query('getticker', {'market': market})
 
-    def get_market_summary(self, market):
-        """
-        Used to get the current tick values for a market.
-        :param market: String literal for the market (ex: BTC-LTC)
-        :type market: str
-        :return: Current values for given market in JSON
-        :rtype : dict
-        """
-        return self.api_query('getmarketsummary', {'market': market})
-
     def get_market_summaries(self):
         """
         Used to get the last 24 hour summary of all active exchanges
@@ -127,6 +130,18 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getmarketsummaries')
+      
+    def get_marketsummary(self, market):
+        """
+        Used to get the last 24 hour summary of all active exchanges in specific coin
+        
+        :param market: String literal for the market(ex: XRP)
+        :type market: str
+        
+        :return: Summaries of active exchanges of a coin in JSON
+        :rtype : dict
+        """
+        return self.api_query('getmarketsummary', {'market': market})
 
     def get_orderbook(self, market, depth_type, depth=20):
         """
@@ -259,6 +274,8 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getbalances', {})
+   
+   
 
     def get_balance(self, currency):
         """
@@ -303,9 +320,20 @@ class Bittrex(object):
         /account/getorderhistory
         :param market: optional a string literal for the market (ie. BTC-LTC). If ommited, will return for all markets
         :type market: str
-        :param count: optional 	the number of records to return
+        :param count: optional  the number of records to return
         :type count: int
         :return: order history in JSON
         :rtype : dict
         """
         return self.api_query('getorderhistory', {'market':market, 'count': count})
+
+    def get_order(self, uuid):
+        """
+        Used to get details of buy or sell order
+        /account/getorder 
+        :param uuid: uuid of buy or sell order
+        :type uuid: str
+        :return:
+        :rtype : dict
+        """
+        return self.api_query('getorder', {'uuid': uuid})
