@@ -30,6 +30,7 @@ MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket',
 
 ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw', 'getorderhistory', 'getorder'}
 
+
 def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
     cipher = AES.new(getpass.getpass('Input encryption password (string will not show)'))
     api_key_n = cipher.encrypt(api_key)
@@ -39,7 +40,7 @@ def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
         with open(export_fn, 'w') as outfile:
             json.dump(api, outfile)
     return api
-
+  
 
 class Bittrex(object):
     """
@@ -331,8 +332,10 @@ class Bittrex(object):
         """
         Used to get details of buy or sell order
         /account/getorder 
+
         :param uuid: uuid of buy or sell order
         :type uuid: str
+
         :return:
         :rtype : dict
         """
