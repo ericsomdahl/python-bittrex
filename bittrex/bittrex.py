@@ -135,7 +135,7 @@ class Bittrex(object):
         """
         Used to get the last 24 hour summary of all active exchanges in specific coin
         
-        :param market: String literal for the market(ex: XRP)
+        :param market: String literal for the market(ex: BTC-XRP)
         :type market: str
         
         :return: Summaries of active exchanges of a coin in JSON
