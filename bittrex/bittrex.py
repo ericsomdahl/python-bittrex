@@ -276,7 +276,7 @@ class Bittrex(object):
         """
         return self.api_query('withdraw', {'currency': currency, 'quantity': quantity, 'address': address})
 
-    def get_order_history(self, market, count):
+    def get_order_history(self, market=None):
         """
         Used to reterieve order trade history of account
         /account/getorderhistory
@@ -287,7 +287,10 @@ class Bittrex(object):
         :return: order history in JSON
         :rtype : dict
         """
-        return self.api_query('getorderhistory', {'market':market, 'count': count})
+        if not market:
+            return self.api_query('getorderhistory')
+        else:
+            return self.api_query('getorderhistory', {'market': market})
 
     def get_order(self, uuid):
         """
