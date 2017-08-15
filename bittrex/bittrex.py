@@ -219,7 +219,7 @@ class Bittrex(object):
         """
         return self.api_query('cancel', {'uuid': uuid})
 
-    def get_open_orders(self, market):
+    def get_open_orders(self, market=None):
         """
         Get all orders that you currently have opened. A specific market can be requested
         /market/getopenorders
@@ -228,7 +228,10 @@ class Bittrex(object):
         :return: Open orders info in JSON
         :rtype : dict
         """
-        return self.api_query('getopenorders', {'market': market})
+        if market is None:
+            return self.api_query('getopenorders')
+        else:
+            return self.api_query('getopenorders', {'market': market})
 
     def get_balances(self):
         """
