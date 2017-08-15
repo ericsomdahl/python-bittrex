@@ -40,15 +40,21 @@ def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
         with open(export_fn, 'w') as outfile:
             json.dump(api, outfile)
     return api
-  
+
+def using_requests(request_url, apisign):
+    return requests.get(
+                request_url,
+                headers={"apisign": apisign}
+            ).json()
 
 class Bittrex(object):
     """
     Used for requesting Bittrex with API key and API secret
     """
-    def __init__(self, api_key, api_secret):
+    def __init__(self, api_key, api_secret, dispatch=using_requests):
         self.api_key = str(api_key) if api_key is not None else ''
         self.api_secret = str(api_secret) if api_secret is not None else ''
+        self.dispatch = dispatch
 
     def decrypt(self):
         if encrypted:
@@ -90,10 +96,10 @@ class Bittrex(object):
 
         request_url += urlencode(options)
 
-        return requests.get(
-            request_url,
-            headers={"apisign": hmac.new(self.api_secret.encode(), request_url.encode(), hashlib.sha512).hexdigest()}
-        ).json()
+        apisign = hmac.new(self.api_secret.encode(),
+                           request_url.encode(),
+                           hashlib.sha512).hexdigest()
+        return self.dispatch(request_url, apisign)
 
     def get_markets(self):
         """
