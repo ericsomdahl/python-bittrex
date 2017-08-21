@@ -26,9 +26,25 @@ BOTH_ORDERBOOK = 'both'
 
 BASE_URL = 'https://bittrex.com/api/v1.1/%s/'
 
-MARKET_SET = {'getopenorders', 'cancel', 'sellmarket', 'selllimit', 'buymarket', 'buylimit'}
+MARKET_SET = {
+    'getopenorders',
+    'cancel',
+    'sellmarket',
+    'selllimit',
+    'buymarket',
+    'buylimit'
+}
 
-ACCOUNT_SET = {'getbalances', 'getbalance', 'getdepositaddress', 'withdraw', 'getorderhistory', 'getorder'}
+ACCOUNT_SET = {
+    'getbalances',
+    'getbalance',
+    'getdepositaddress',
+    'withdraw',
+    'getorderhistory',
+    'getorder',
+    'getdeposithistory',
+    'getwithdrawalhistory'
+}
 
 
 def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
@@ -136,14 +152,14 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getmarketsummaries')
-      
+
     def get_marketsummary(self, market):
         """
         Used to get the last 24 hour summary of all active exchanges in specific coin
-        
+
         :param market: String literal for the market(ex: BTC-XRP)
         :type market: str
-        
+
         :return: Summaries of active exchanges of a coin in JSON
         :rtype : dict
         """
@@ -247,7 +263,7 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getbalances', {})
-   
+
     def get_balance(self, currency):
         """
         Used to retrieve the balance from your account for a specific currency
@@ -304,7 +320,7 @@ class Bittrex(object):
     def get_order(self, uuid):
         """
         Used to get details of buy or sell order
-        /account/getorder 
+        /account/getorder
 
         :param uuid: uuid of buy or sell order
         :type uuid: str
@@ -313,3 +329,19 @@ class Bittrex(object):
         :rtype : dict
         """
         return self.api_query('getorder', {'uuid': uuid})
+
+    def get_withdrawal_history(self, currency=None):
+        if currency is None:
+            params = {}
+        else:
+            params = {'currency': currency}
+
+        return self.api_query('getwithdrawalhistory', params)
+
+    def get_deposit_history(self, currency=None):
+        if currency is None:
+            params = {}
+        else:
+            params = {'currency': currency}
+
+        return self.api_query('getdeposithistory', params)
