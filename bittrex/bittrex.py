@@ -75,10 +75,12 @@ class Bittrex(object):
     """
     Used for requesting Bittrex with API key and API secret
     """
-    def __init__(self, api_key, api_secret, dispatch=using_requests):
+    def __init__(self, api_key, api_secret, calls_per_second=1, dispatch=using_requests):
         self.api_key = str(api_key) if api_key is not None else ''
         self.api_secret = str(api_secret) if api_secret is not None else ''
         self.dispatch = dispatch
+        self.call_rate = 1.0/calls_per_second
+        self.last_call = None
 
     def decrypt(self):
         if encrypted:
@@ -95,6 +97,18 @@ class Bittrex(object):
             self.api_secret = cipher.decrypt(self.api_secret).decode()
         else:
             raise ImportError('"pycrypto" module has to be installed')
+
+    def wait(self):
+        if self.last_call is None:
+            self.last_call = time.time()
+        else:
+            now = time.time()
+            passed = now - self.last_call
+            if passed < self.call_rate:
+                #print("sleep")
+                time.sleep(1.0 - passed)
+
+            self.last_call = time.time()
 
     def api_query(self, method, options=None):
         """
@@ -128,6 +142,9 @@ class Bittrex(object):
         apisign = hmac.new(self.api_secret.encode(),
                            request_url.encode(),
                            hashlib.sha512).hexdigest()
+
+        self.wait()
+
         return self.dispatch(request_url, apisign)
 
     def get_markets(self):
