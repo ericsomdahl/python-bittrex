@@ -5,4 +5,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - python -m unittest bittrex.test.bittrex_tests.TestBittrexPublicAPI
+  - python -m unittest bittrex.test.bittrex_tests
