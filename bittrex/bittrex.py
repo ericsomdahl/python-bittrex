@@ -145,13 +145,21 @@ class Bittrex(object):
 
         request_url += urlencode(options)
 
-        apisign = hmac.new(self.api_secret.encode(),
-                           request_url.encode(),
-                           hashlib.sha512).hexdigest()
+        try:
+           apisign = hmac.new(self.api_secret.encode(),
+                              request_url.encode(),
+                              hashlib.sha512).hexdigest()
 
-        self.wait()
+           self.wait()
 
-        return self.dispatch(request_url, apisign)
+           return self.dispatch(request_url, apisign)
+
+        except:
+            return {
+               'success' : False,
+               'message' : 'NO_API_RESPONSE',
+               'result'  : None
+            }
 
     def get_markets(self):
         """
