@@ -115,7 +115,7 @@ class Bittrex(object):
             passed = now - self.last_call
             if passed < self.call_rate:
                 # print("sleep")
-                time.sleep(1.0 - passed)
+                time.sleep(self.call_rate - passed)
 
             self.last_call = time.time()
 
