@@ -630,7 +630,7 @@ class Bittrex(object):
             API_V2_0: '/pub/Currency/GetBalanceDistribution'
         }, protection=PROTECTION_PUB)
 
-    def get_pending_withdrawls(self, currency=None):
+    def get_pending_withdrawals(self, currency=None):
         """
         Used to view your pending withdrawls
 

@@ -253,8 +253,8 @@ class TestBittrexV11AccountAPI(unittest.TestCase):
         test_basic_response(self, actual, "get_deposit_history")
         self.assertIsInstance(actual['result'], list, "result is not a list")
 
-    def test_get_pending_withdrawls(self):
-        self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_pending_withdrawls)
+    def test_get_pending_withdrawals(self):
+        self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_pending_withdrawals)
 
     def test_get_pending_deposits(self):
         self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_pending_deposits)
@@ -359,14 +359,14 @@ class TestBittrexV20AccountAPI(unittest.TestCase):
         test_basic_response(self, actual, "get_deposit_history")
         self.assertIsInstance(actual['result'], list, "result is not a list")
 
-    def test_get_pending_withdrawls_all_currencies(self):
-        actual = self.bittrex.get_pending_withdrawls()
-        test_basic_response(self, actual, "get_pending_withdrawls")
+    def test_get_pending_withdrawals_all_currencies(self):
+        actual = self.bittrex.get_pending_withdrawals()
+        test_basic_response(self, actual, "get_pending_withdrawals")
         self.assertIsInstance(actual['result'], list, "result is not a list")
 
-    def test_get_pending_withdrawls_one_currency(self):
-        actual = self.bittrex.get_pending_withdrawls('BTC')
-        test_basic_response(self, actual, "get_pending_withdrawls")
+    def test_get_pending_withdrawals_one_currency(self):
+        actual = self.bittrex.get_pending_withdrawals('BTC')
+        test_basic_response(self, actual, "get_pending_withdrawals")
         self.assertIsInstance(actual['result'], list, "result is not a list")
 
     def test_get_pending_deposits_all_currencies(self):
