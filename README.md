@@ -10,6 +10,11 @@ Tips are appreciated:
 * LTC: LaasG9TRa9p32noN2oKUVVqrDFp4Ja1NK3
 
 
+Installation
+-------------
+`pip install git+https://github.com/ericsomdahl/python-bittrex.git`
+
+
 Example Usage for Bittrex API
 -------------
 
