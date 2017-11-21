@@ -146,19 +146,19 @@ class Bittrex(object):
         request_url += urlencode(options)
 
         try:
-           apisign = hmac.new(self.api_secret.encode(),
-                              request_url.encode(),
-                              hashlib.sha512).hexdigest()
+            apisign = hmac.new(self.api_secret.encode(),
+                               request_url.encode(),
+                               hashlib.sha512).hexdigest()
 
-           self.wait()
+            self.wait()
 
-           return self.dispatch(request_url, apisign)
+            return self.dispatch(request_url, apisign)
 
         except:
             return {
-               'success' : False,
-               'message' : 'NO_API_RESPONSE',
-               'result'  : None
+                'success': False,
+                'message': 'NO_API_RESPONSE',
+                'result': None
             }
 
     def get_markets(self):
@@ -797,6 +797,37 @@ class Bittrex(object):
 
         return self._api_query(path_dict={
             API_V2_0: '/pub/market/GetTicks'
+        }, options={
+            'marketName': market, 'tickInterval': tick_interval
+        }, protection=PROTECTION_PUB)
+
+    def get_latest_candle(self, market, tick_interval):
+        """
+        Used to get the latest candle for the market.
+
+        Endpoint:
+        1.1 NO EQUIVALENT
+        2.0 /pub/market/GetLatestTick
+
+        Example ::
+            { success: true,
+              message: '',
+              result:
+              [ {   O : 0.00350397,
+                    H : 0.00351000,
+                    L : 0.00350000,
+                    C : 0.00350350,
+                    V : 1326.42643480,
+                    T : 2017-11-03T03:18:00,
+                    BV: 4.64416189 } ]
+            }
+
+        :return: Available latest tick candle in JSON
+        :rtype: dict
+        """
+
+        return self._api_query(path_dict={
+            API_V2_0: '/pub/market/GetLatestTick'
         }, options={
             'marketName': market, 'tickInterval': tick_interval
         }, protection=PROTECTION_PUB)

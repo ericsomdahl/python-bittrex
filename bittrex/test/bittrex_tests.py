@@ -81,6 +81,10 @@ class TestBittrexV11PublicAPI(unittest.TestCase):
         self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_candles, market='BTC-LTC',
                                 tick_interval=TICKINTERVAL_ONEMIN)
 
+    def test_get_latest_candle(self):
+        self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_latest_candle, market='BTC-LTC',
+                               tick_interval=TICKINTERVAL_ONEMIN)
+
 
 class TestBittrexV20PublicAPI(unittest.TestCase):
     """
@@ -153,6 +157,11 @@ class TestBittrexV20PublicAPI(unittest.TestCase):
     def test_get_candles(self):
         actual = self.bittrex.get_candles('BTC-LTC', tick_interval=TICKINTERVAL_ONEMIN)
         test_basic_response(self, actual, "test_get_candles")
+        self.assertIsInstance(actual['result'], list)
+
+    def test_get_latest_candle(self):
+        actual = self.bittrex.get_latest_candle('BTC-LTC', tick_interval=TICKINTERVAL_ONEMIN)
+        test_basic_response(self, actual, "test_get_latest_candle")
         self.assertIsInstance(actual['result'], list)
 
 
