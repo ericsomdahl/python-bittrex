@@ -379,7 +379,7 @@ class Bittrex(object):
 
         Endpoint:
         1.1 /market/cancel
-        2.0 /key/market/cancel
+        2.0 /key/market/tradecancel
 
         :param uuid: uuid of buy or sell order
         :type uuid: str
@@ -388,7 +388,7 @@ class Bittrex(object):
         """
         return self._api_query(path_dict={
             API_V1_1: '/market/cancel',
-            API_V2_0: '/key/market/cancel'
+            API_V2_0: '/key/market/tradecancel'
         }, options={'uuid': uuid, 'orderid': uuid}, protection=PROTECTION_PRV)
 
     def get_open_orders(self, market=None):
