@@ -1,8 +1,15 @@
 language: python
 python:
-  - "2.7"
-  - "3.6"
+- '2.7'
+- '3.6'
 install:
-  - pip install -r requirements.txt
+- pip install -r requirements.txt
 script:
-  - python -m unittest bittrex.test.bittrex_tests
+- python -m unittest bittrex.test.bittrex_tests
+deploy:
+  provider: pypi
+  user: "corsaireric"
+  password:
+    secure: NnKQIm3hJkP5Ti4o1lyXosqcRX/ohO2wxhJYH02ugttxK3xkmwlL0xPcjF/ZnVzDxi7AUWmYlecOmERHhtlOPBdGBryvRzrrTepCOXbHyVfM/O2l6zgQ6IY5wReWcJgqzA8gABA8Xp/YgQYi6pMGeNtRWwU9acMYWhv8OUSiACmJLnTPw95WtwnHDn7nUZspTSmPGNHC5JfT0ltKv41uJcqF7JQ2fdYMW7y4JyxfsWkf2Zsbg/rW449tglmCDw/7nkVFoohNGG3iCo3w3pBebdsUywM0eGke9fAQ6G06NbNN7GBoB0LizbWac7GAN6uZIMu0rdZKTAzyCEJisTjCQmbx0kKIgONye6IWwCEjtNYiUH0G3EwBlYJPXrN6Y7ip0AjgEOxOLhSHw7p5vRJT6VKnzTb/gG2+r7aP0HNOSLP2SokvpQuDLD5nz9KNP5Qafd2gjmmBnKKhsh2vr0CIMJVGQpZDUROJbCF6aCXA0F5ewZhI9u0hKtfTH53j2ktztx1Cy/Nqd8+WopYZqg6+0Ki+HaBmtEjz5GlI0PRZk1RvO9LDfEpUgHmy/7XCr4XKixE41ENaYChmoM+ruiU//Z7BcWI4H7+lcdCsQEIqygZ1czQSdFKukgh5Ry2ENxt+243vtfJi/QmtDLDQf1dlsX4tqWGUDO2gwzZN9OnXa1Y=
+  on:
+    tags: true
