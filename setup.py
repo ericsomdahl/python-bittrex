@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 
 setup(name='python-bittrex',
-      version='0.2.0',
+      version='0.2.1',
       packages=['bittrex'],
       modules=['bittrex'],
+      install_requires=['requests'],
       description='Python bindings for bittrex API.',
       author='Eric Somdahl',
       author_email='eric@corsairconsulting.com',

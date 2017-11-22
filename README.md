@@ -16,7 +16,6 @@ Installation
 
 
 Example Usage for Bittrex API
--------------
 
 ```python
 from bittrex import Bittrex
