@@ -1,9 +1,12 @@
 import unittest
 import json
-import os
 from bittrex.bittrex import Bittrex, API_V2_0, API_V1_1, BUY_ORDERBOOK, TICKINTERVAL_ONEMIN
 
-IS_CI_ENV = True if 'IN_CI' in os.environ else False
+try:
+    open("secrets.json").close()
+    IS_CI_ENV = False
+except Exception:
+    IS_CI_ENV = True
 
 
 def test_basic_response(unit_test, result, method_name):
@@ -83,7 +86,7 @@ class TestBittrexV11PublicAPI(unittest.TestCase):
 
     def test_get_latest_candle(self):
         self.assertRaisesRegexp(Exception, 'method call not available', self.bittrex.get_latest_candle, market='BTC-LTC',
-                               tick_interval=TICKINTERVAL_ONEMIN)
+                                tick_interval=TICKINTERVAL_ONEMIN)
 
 
 class TestBittrexV20PublicAPI(unittest.TestCase):
@@ -98,22 +101,16 @@ class TestBittrexV20PublicAPI(unittest.TestCase):
     def test_handles_none_key_or_secret(self):
         self.bittrex = Bittrex(None, None, api_version=API_V2_0)
         # could call any public method here
-        actual = self.bittrex.get_markets()
+        actual = self.bittrex.get_market_summaries()
         self.assertTrue(actual['success'], "failed with None key and None secret")
 
         self.bittrex = Bittrex("123", None, api_version=API_V2_0)
-        actual = self.bittrex.get_markets()
+        actual = self.bittrex.get_market_summaries()
         self.assertTrue(actual['success'], "failed with None secret")
 
         self.bittrex = Bittrex(None, "123", api_version=API_V2_0)
-        actual = self.bittrex.get_markets()
+        actual = self.bittrex.get_market_summaries()
         self.assertTrue(actual['success'], "failed with None key")
-
-    def test_get_markets(self):
-        actual = self.bittrex.get_markets()
-        test_basic_response(self, actual, "get_markets")
-        self.assertTrue(isinstance(actual['result'], list), "result is not a list")
-        self.assertTrue(len(actual['result']) > 0, "result list is 0-length")
 
     def test_get_currencies(self):
         actual = self.bittrex.get_currencies()
@@ -134,14 +131,6 @@ class TestBittrexV20PublicAPI(unittest.TestCase):
     def test_get_orderbook(self):
         actual = self.bittrex.get_orderbook('BTC-LTC')
         test_basic_response(self, actual, "get_orderbook")
-
-    def test_get_market_history(self):
-        actual = self.bittrex.get_market_history('BTC-LTC')
-        test_basic_response(self, actual, "get_market_history")
-
-    def test_list_markets_by_currency(self):
-        actual = self.bittrex.list_markets_by_currency('LTC')
-        self.assertListEqual(['BTC-LTC', 'ETH-LTC', 'USDT-LTC'], actual)
 
     def test_get_wallet_health(self):
         actual = self.bittrex.get_wallet_health()

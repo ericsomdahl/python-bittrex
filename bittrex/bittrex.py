@@ -8,10 +8,8 @@ import hashlib
 
 try:
     from urllib import urlencode
-    from urlparse import urljoin
 except ImportError:
     from urllib.parse import urlencode
-    from urllib.parse import urljoin
 
 try:
     from Crypto.Cipher import AES
@@ -154,7 +152,7 @@ class Bittrex(object):
 
             return self.dispatch(request_url, apisign)
 
-        except:
+        except Exception:
             return {
                 'success': False,
                 'message': 'NO_API_RESPONSE',
@@ -167,7 +165,7 @@ class Bittrex(object):
         at Bittrex along with other meta data.
 
         1.1 Endpoint: /public/getmarkets
-        2.0 Endpoint: /pub/Markets/GetMarkets
+        2.0 NO Equivalent
 
         Example ::
             {'success': True,
@@ -192,7 +190,6 @@ class Bittrex(object):
         """
         return self._api_query(path_dict={
             API_V1_1: '/public/getmarkets',
-            API_V2_0: '/pub/Markets/GetMarkets'
         }, protection=PROTECTION_PUB)
 
     def get_currencies(self):
@@ -295,7 +292,7 @@ class Bittrex(object):
 
         Endpoint:
         1.1 /market/getmarkethistory
-        2.0 /pub/Market/GetMarketHistory
+        2.0 NO Equivalent
 
         Example ::
             {'success': True,
@@ -318,7 +315,6 @@ class Bittrex(object):
         """
         return self._api_query(path_dict={
             API_V1_1: '/public/getmarkethistory',
-            API_V2_0: '/pub/Market/GetMarketHistory'
         }, options={'market': market, 'marketname': market}, protection=PROTECTION_PUB)
 
     def buy_limit(self, market, quantity, rate):
@@ -514,7 +510,7 @@ class Bittrex(object):
 
         Endpoint:
         1.1 /account/getorderhistory
-        2.0 /key/orders/getorderhistory
+        2.0 /key/orders/getorderhistory or /key/market/GetOrderHistory
 
         :param market: optional a string literal for the market (ie. BTC-LTC).
             If omitted, will return for all markets
@@ -522,10 +518,16 @@ class Bittrex(object):
         :return: order history in JSON
         :rtype : dict
         """
-        return self._api_query(path_dict={
-            API_V1_1: '/account/getorderhistory',
-            API_V2_0: '/key/orders/getorderhistory'
-        }, options={'market': market, 'marketname': market} if market else None, protection=PROTECTION_PRV)
+        if market:
+            return self._api_query(path_dict={
+                API_V1_1: '/account/getorderhistory',
+                API_V2_0: '/key/market/GetOrderHistory'
+            }, options={'market': market, 'marketname': market}, protection=PROTECTION_PRV)
+        else:
+            return self._api_query(path_dict={
+                API_V1_1: '/account/getorderhistory',
+                API_V2_0: '/key/orders/getorderhistory'
+            }, protection=PROTECTION_PRV)
 
     def get_order(self, uuid):
         """

@@ -19,7 +19,7 @@ Installation
 Example Usage for Bittrex API
 
 ```python
-from bittrex import Bittrex
+from bittrex.bittrex import Bittrex, API_V2_0
 
 my_bittrex = Bittrex(None, None, api_version=API_V2_0)  # or defaulting to v1.1 as Bittrex(None, None)
 my_bittrex.get_markets()
@@ -34,7 +34,7 @@ Make sure you save the secret, as it will not be visible
 after navigating away from the page. 
 
 ```python
-from bittrex import Bittrex
+from bittrex.bittrex import *
 
 my_bittrex = Bittrex("<my_api_key>", "<my_api_secret>", api_version="<API_V1_1> or <API_V2_0>")
 

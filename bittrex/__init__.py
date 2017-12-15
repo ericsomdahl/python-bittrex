@@ -1,1 +1,1 @@
-from .bittrex import *
+from .bittrex import *          # noqa
