@@ -215,7 +215,7 @@ class Bittrex(object):
 
         Endpoints:
         1.1 /public/getticker
-        2.0 NO EQUIVALENT -- but get_candlesticks gives comparable data
+        2.0 NO EQUIVALENT -- but get_latest_candle gives comparable data
 
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
@@ -265,7 +265,7 @@ class Bittrex(object):
         """
         Used to get retrieve the orderbook for a given market.
 
-        The depth_type parameter is IGNORED under v2.0 and both orderbooks are aleways returned
+        The depth_type parameter is IGNORED under v2.0 and both orderbooks are always returned
 
         Endpoint:
         1.1 /public/getorderbook
@@ -634,7 +634,7 @@ class Bittrex(object):
 
     def get_pending_withdrawals(self, currency=None):
         """
-        Used to view your pending withdrawls
+        Used to view your pending withdrawals
 
         Endpoint:
         1.1 NO EQUIVALENT
@@ -642,7 +642,7 @@ class Bittrex(object):
 
         :param currency: String literal for the currency (ie. BTC)
         :type currency: str
-        :return: pending widthdrawls in JSON
+        :return: pending withdrawals in JSON
         :rtype : list
         """
         return self._api_query(path_dict={
@@ -767,7 +767,7 @@ class Bittrex(object):
 
     def get_candles(self, market, tick_interval):
         """
-        Used to get all tick candle for a market.
+        Used to get all tick candles for a market.
 
         Endpoint:
         1.1 NO EQUIVALENT
@@ -793,7 +793,7 @@ class Bittrex(object):
                    BV: 1012.63286332 }]
             }
 
-        :return: Available tick candle in JSON
+        :return: Available tick candles in JSON
         :rtype: dict
         """
 
