@@ -157,3 +157,9 @@ Temporary Items
 
 #JSON file containing API keys and API secrets
 secrets.json
+
+# Other
+.idea/
+credentials.json
+Dockerfile
+autosell.log
