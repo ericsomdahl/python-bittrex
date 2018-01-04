@@ -15,8 +15,19 @@ Installation
 ### for bleeding edge development 
 `pip install git+https://github.com/ericsomdahl/python-bittrex.git`
 
+API Documentation
+-------------
+**API 1.1 is considered stable**
+
+[Official API Documentation](https://bittrex.com/Home/Api)
+
+**API 2.0 is BETA, use at your own risk**
+
+[Unofficial 2.0 API Documentation](https://github.com/thebotguys/golang-bittrex-api/wiki/Bittrex-API-Reference-(Unofficial)) - The golang guys have been diligently following the rapid changes to the 2.0 Beta, but use at your own risk.
+
 
 Example Usage for Bittrex API
+-------------
 
 ```python
 from bittrex.bittrex import Bittrex, API_V2_0
