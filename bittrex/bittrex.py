@@ -484,7 +484,7 @@ class Bittrex(object):
             API_V2_0: '/key/balance/getdepositaddress'
         }, options={'currency': currency, 'currencyname': currency}, protection=PROTECTION_PRV)
 
-    def withdraw(self, currency, quantity, address):
+    def withdraw(self, currency, quantity, address, paymentid=None):
         """
         Used to withdraw funds from your account
 
@@ -498,13 +498,16 @@ class Bittrex(object):
         :type quantity: float
         :param address: The address where to send the funds.
         :type address: str
+        :param paymentid: Optional argument for memos, tags, or other supplemental information for cryptos such as XRP.
+        :type paymentid: str
         :return:
         :rtype : dict
         """
         return self._api_query(path_dict={
             API_V1_1: '/account/withdraw',
             API_V2_0: '/key/balance/withdrawcurrency'
-        }, options={'currency': currency, 'quantity': quantity, 'address': address}, protection=PROTECTION_PRV)
+        }, options={'currency': currency, 'quantity': quantity, 'address': address, 'paymentid': paymentid}
+            if paymentid else None, protection=PROTECTION_PRV)
 
     def get_order_history(self, market=None):
         """
