@@ -357,7 +357,7 @@ class Bittrex(object):
 
         :param market: String literal for the market (ex: BTC-LTC)
         :type market: str
-        :param quantity: The amount to purchase
+        :param quantity: The amount to sell
         :type quantity: float
         :param rate: The rate at which to place the order.
             This is not needed for market orders

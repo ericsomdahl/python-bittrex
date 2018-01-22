@@ -34,6 +34,11 @@ from bittrex.bittrex import Bittrex, API_V2_0
 
 my_bittrex = Bittrex(None, None, api_version=API_V2_0)  # or defaulting to v1.1 as Bittrex(None, None)
 my_bittrex.get_markets()
+```
+
+This call to get_markets returns an object such as the following:
+
+```python
 {'success': True, 'message': '', 'result': [{'MarketCurrency': 'LTC', ...
 ```
 
@@ -50,6 +55,12 @@ from bittrex.bittrex import *
 my_bittrex = Bittrex("<my_api_key>", "<my_api_secret>", api_version="<API_V1_1> or <API_V2_0>")
 
 my_bittrex.get_balance('ETH')
+
+```
+
+This call to get_balance returns an object such as the following:
+
+```python
 {'success': True, 
  'message': '',
  'result': {'Currency': 'ETH', 'Balance': 0.0, 'Available': 0.0, 
