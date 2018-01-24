@@ -74,7 +74,8 @@ def encrypt(api_key, api_secret, export=True, export_fn='secrets.json'):
 def using_requests(request_url, apisign):
     return requests.get(
         request_url,
-        headers={"apisign": apisign}
+        headers={"apisign": apisign},
+        timeout=10
     ).json()
 
 
