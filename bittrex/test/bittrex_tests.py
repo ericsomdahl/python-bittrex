@@ -125,8 +125,8 @@ class TestBittrexV20PublicAPI(unittest.TestCase):
         test_basic_response(self, actual, "get_market_summaries")
 
     def test_get_market_summary(self):
-        actual = self.bittrex.get_marketsummary(market='BTC-LTC')
-        test_basic_response(self, actual, "get_marketsummary")
+        actual = self.bittrex.get_market_summary(market='BTC-LTC')
+        test_basic_response(self, actual, "get_market_summary")
 
     def test_get_orderbook(self):
         actual = self.bittrex.get_orderbook('BTC-LTC')

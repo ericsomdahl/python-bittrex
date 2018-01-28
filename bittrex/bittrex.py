@@ -245,7 +245,7 @@ class Bittrex(object):
             API_V2_0: '/pub/Markets/GetMarketSummaries'
         }, protection=PROTECTION_PUB)
 
-    def get_marketsummary(self, market):
+    def get_market_summary(self, market):
         """
         Used to get the last 24 hour summary of all active
         exchanges in specific coin
