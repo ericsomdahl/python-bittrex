@@ -2,6 +2,7 @@ python-bittrex
 ==============
 
 [![Build Status](https://travis-ci.org/ericsomdahl/python-bittrex.svg?branch=master)](https://travis-ci.org/ericsomdahl/python-bittrex)
+[![PyPI version](https://badge.fury.io/py/python-bittrex.svg)](https://badge.fury.io/py/python-bittrex)
 
 Python bindings for bittrex.  I am Not associated -- use at your own risk, etc.
 
