@@ -415,7 +415,7 @@ class Bittrex(object):
 
         Endpoint:
         1.1 /account/getbalances
-        2.0 /key/balance/getbalances
+        2.0 /key/balance/GetBalances
 
         Example ::
             {'success': True,
@@ -435,7 +435,7 @@ class Bittrex(object):
         """
         return self._api_query(path_dict={
             API_V1_1: '/account/getbalances',
-            API_V2_0: '/key/balance/getbalances'
+            API_V2_0: '/key/balance/GetBalances'
         }, protection=PROTECTION_PRV)
 
     def get_balance(self, currency):
