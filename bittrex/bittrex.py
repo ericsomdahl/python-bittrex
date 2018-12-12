@@ -5,7 +5,7 @@
 import time
 import hmac
 import hashlib
-
+import sys
 try:
     from urllib import urlencode
 except ImportError:
@@ -147,9 +147,17 @@ class Bittrex(object):
         request_url += urlencode(options)
 
         try:
-            apisign = hmac.new(self.api_secret.encode(),
-                               request_url.encode(),
-                               hashlib.sha512).hexdigest()
+            if sys.version_info >= (3, 0) and protection != PROTECTION_PUB:
+
+                apisign = hmac.new(bytearray(self.api_secret, 'ascii'),
+                                   bytearray(request_url, 'ascii'),
+                                   hashlib.sha512).hexdigest()
+
+            else:
+
+                apisign = hmac.new(self.api_secret.encode(),
+                                   request_url.encode(),
+                                   hashlib.sha512).hexdigest()
 
             self.wait()
 
